@@ -1,8 +1,8 @@
 pipeline {
     agent any
 
-    environment {
-        IMAGE_NAME = "oliviatoratti/temperature-converter"
+    tools {
+        maven 'Maven'
     }
 
     stages {
@@ -40,28 +40,6 @@ pipeline {
         stage('Publish Coverage') {
             steps {
                 jacoco()
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                bat 'docker build -t %IMAGE_NAME% .'
-            }
-        }
-
-        stage('Push Docker Image') {
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASS'
-                )]) {
-
-                    bat '''
-                    docker login -u %DOCKER_USER% -p %DOCKER_PASS%
-                    docker push %IMAGE_NAME%
-                    '''
-                }
             }
         }
     }
